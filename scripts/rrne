@@ -1,0 +1,23 @@
+#!/usr/bin/expect -f
+
+# https://ubuntuforums.org/showthread.php?t=865420
+#trap sigwinch and pass it to the child we spawned
+trap {
+ set rows [stty rows]
+ set cols [stty columns]
+ stty rows $rows columns $cols < $spawn_out(slave,name)
+} WINCH
+
+set shorthost [lindex $argv 0]
+set username $env(WISC_CS_USERNAME)
+set command [lindex $argv 1]
+set regex1 "\\\[$username@\[\\w\\-\]*\\\] \\(1\\)\\$"
+set regex2 "\\\[$username@\[\\w\\-\]*\\\] \\(2\\)\\$"
+set timeout -1
+
+spawn ./scripts/connect $shorthost
+
+expect -re $regex1
+send "$command\n"
+expect -re $regex2
+interact

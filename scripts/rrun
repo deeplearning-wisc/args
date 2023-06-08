@@ -1,0 +1,16 @@
+#!/usr/bin/expect -f
+set shorthost [lindex $argv 0]
+set username $env(WISC_CS_USERNAME)
+set command [lindex $argv 1]
+set regex1 "\\\[$username@\[\\w\\-\]*\\\] \\(1\\)\\$"
+set regex2 "\\\[$username@\[\\w\\-\]*\\\] \\(2\\)\\$"
+set timeout -1
+
+spawn ./scripts/connect $shorthost
+
+expect -re $regex1
+send "$command\n"
+log_file out.log
+expect -re $regex2
+log_file
+send "exit\n"

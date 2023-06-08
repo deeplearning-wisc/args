@@ -1,0 +1,8 @@
+cd aas; time python3 test.py
+[?2004lLoading checkpoint shards:   0%|                          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:  50%|█████████         | 1/2 [00:03<00:03,  3.85s/it]Loading checkpoint shards: 100%|██████████████████| 2/2 [00:05<00:00,  2.38s/it]Loading checkpoint shards: 100%|██████████████████| 2/2 [00:05<00:00,  2.60s/it]
+done :)
+
+real	3m3.040s
+user	3m32.586s
+sys	0m22.120s
+[?2004h[khanov@galaxy-03] (2)$ 

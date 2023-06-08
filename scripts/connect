@@ -1,0 +1,33 @@
+#!/usr/bin/expect -f
+
+# https://ubuntuforums.org/showthread.php?t=865420
+#trap sigwinch and pass it to the child we spawned
+trap {
+ set rows [stty rows]
+ set cols [stty columns]
+ stty rows $rows columns $cols < $spawn_out(slave,name)
+} WINCH
+
+set shorthost [lindex $argv 0]
+set host [format %s.cs.wisc.edu $shorthost]
+set username $env(WISC_CS_USERNAME)
+set host [format %s@%s $username $host]
+set password $env(WISC_CS_PASSWD)
+set timeout -1
+
+spawn ssh $host
+
+expect {
+    "Are you sure you want to continue connecting (yes/no" {
+        send "yes\n"
+        expect "Password:"
+        send "$password\n"
+    }
+    "Password:" {
+        send "$password\n"
+    }
+}
+
+expect "Passcode or option (1-1):"
+send "1\n"
+interact
