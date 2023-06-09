@@ -2,7 +2,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
 
 model = AutoModelForCausalLM.from_pretrained("facebook/opt-6.7b", torch_dtype=torch.float16).cuda()
-tokenizer = AutoTokenizer.from_pretrained("facebook/opt-6.7b", use_fast=False)
+tokenizer = AutoTokenizer.from_pretrained("facebook/opt-6.7b", use_fast=False, padding_side='left')
 
 def run_model(prompt: str) -> str:
     global model, tokenizer
