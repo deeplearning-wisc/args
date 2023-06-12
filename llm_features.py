@@ -44,7 +44,7 @@ class OPTEmbeddingGenerator:
         print("Loading tokenizer...")
         self.tokenizer = AutoTokenizer.from_pretrained("facebook/opt-6.7b", use_fast=False, padding_side='left')
         print("Loading LLM...")
-        self.llm = AutoModelForCausalLM.from_pretrained("facebook/opt-6.7b", torch_dtype=torch.float16).to(device)
+        self.llm = AutoModelForCausalLM.from_pretrained("facebook/opt-6.7b", torch_dtype=torch.float16, resume_download=True).to(device)
         
         kwargs = {pooling_method: True for pooling_method in pooling_methods}
         if "pooling_mode_mean_tokens" not in pooling_methods:
@@ -69,7 +69,7 @@ class LLaMaEmbeddingGenerator:
 
         print("Loading LLM...")
         # AutoModelForCausalLM.from_pretrained("yahma/llama-7b-hf")
-        self.llm = AutoModelForCausalLM.from_pretrained("yahma/llama-7b-hf", torch_dtype=torch.float16).to(device)
+        self.llm = AutoModelForCausalLM.from_pretrained("yahma/llama-7b-hf", torch_dtype=torch.float16, resume_download=True).to(device)
         
         kwargs = {pooling_method: True for pooling_method in pooling_methods}
         if "pooling_mode_mean_tokens" not in pooling_methods:
