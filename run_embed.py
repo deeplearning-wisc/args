@@ -1,6 +1,8 @@
 from torch import nn
 from torch import optim
 from llm_features import EmbeddedHHRLHF, LLaMaEmbeddingGenerator
+import gc
+import torch
 
 ds = EmbeddedHHRLHF(["pooling_mode_mean_tokens"], [16], llm_embedding=LLaMaEmbeddingGenerator)
 
@@ -22,7 +24,9 @@ loss_f = nn.BCEWithLogitsLoss()
 optimizer = optim.Adam(auxmodel.parameters())
 
 while True:
-    batch = ds.next()
+    with torch.no_grad():
+        batch = ds.next()
+    
     if batch is None: break
 
     optimizer.zero_grad()
@@ -35,3 +39,8 @@ while True:
     print(f"{loss_value.item()=}")
     loss_value.backward()
     optimizer.step()
+
+    # reclaim memory from batch
+    del batch
+    gc.collect()
+    torch.cuda.empty_cache()
