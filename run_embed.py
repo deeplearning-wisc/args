@@ -1,12 +1,17 @@
 from llm_features import LLaMaEmbeddingGenerator, OPTEmbeddingGenerator
 import gc
 import torch
-from datasets import load_dataset
+import datasets
 from tqdm import tqdm
 from pathlib import Path
+import pickle
+import numpy as np
 
 CUDA_DEVICE = 0
-BATCH_SIZE = 16
+BATCH_SIZE = 32
+
+NUM_WORKERS = 4
+MY_WORKER_NUM = 0
 
 DATASET = "Anthropic/hh-rlhf"
 SPLIT = "train"
@@ -25,7 +30,7 @@ print(f"{res_dir=}")
 embedding_gen = LLaMaEmbeddingGenerator(POOLING_METHODS, LAYERS)
 embedding_gen.llm = embedding_gen.llm.cuda(CUDA_DEVICE)
 
-dataset = load_dataset(DATASET, data_dir=None)[SPLIT]
+dataset = datasets.load_dataset(DATASET, data_dir=None)[SPLIT]
 
 def embed(row):
     print("running embed")
@@ -44,13 +49,22 @@ def embed(row):
     gc.collect()
     torch.cuda.empty_cache()
     print("done")
-    return {"embeddings": embeddings, "labels": labels}
+    return {"embeddings": embeddings.numpy(), "labels": labels.numpy()}
 
 res_dir.mkdir(parents=True, exist_ok=True)
 
-# for row in tqdm(dataset.iter(batch_size=BATCH_SIZE)):
-#     embed(row)
+for num, row in enumerate(tqdm(dataset.iter(batch_size=BATCH_SIZE))):
+    if num % NUM_WORKERS != MY_WORKER_NUM: continue
 
-new_ds = dataset.map(embed, batched=True, batch_size=BATCH_SIZE, remove_columns=["rejected", "chosen"])
+    print(f"Working on chunk {num}....")
+    out_file = res_dir / f"chunk_{num}.pkl"
 
-new_ds.save_to_disk(res_dir.absolute())
+    if out_file.exists():
+        print(f"chunk {num} already exists, skipping")
+        continue
+
+    out_dict = embed(row)
+
+
+    with open(out_file) as out_file_handle:
+        pickle.dump(out_dict, out_file_handle)
