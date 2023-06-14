@@ -6,12 +6,23 @@ from tqdm import tqdm
 from pathlib import Path
 import pickle
 import numpy as np
+import argparse
 
-CUDA_DEVICE = 0
-BATCH_SIZE = 32
+parser = argparse.ArgumentParser(description='Run an embedding process')
+parser.add_argument('--batchsize', default=32, type=int, required=True)
+parser.add_argument('--numworkers', type=int, required=True)
+parser.add_argument('--workerid', type=int, required=True)
+parser.add_argument('--gpu', type=int, required=True)
 
-NUM_WORKERS = 4
-MY_WORKER_NUM = 0
+args = parser.parse_args()
+
+CUDA_DEVICE = args.gpu
+BATCH_SIZE = args.batchsize
+
+NUM_WORKERS = args.numworkers
+MY_WORKER_NUM = args.workerid
+
+print(f"{BATCH_SIZE=}, {CUDA_DEVICE=}, {NUM_WORKERS=}, {MY_WORKER_NUM=}")
 
 DATASET = "Anthropic/hh-rlhf"
 SPLIT = "train"
@@ -27,7 +38,7 @@ current_dir = Path(".")
 res_dir = current_dir / "processed" / res_dir_name
 
 print(f"{res_dir=}")
-embedding_gen = LLaMaEmbeddingGenerator(POOLING_METHODS, LAYERS)
+embedding_gen = LLaMaEmbeddingGenerator(POOLING_METHODS, LAYERS, device=f"cuda:{CUDA_DEVICE}")
 embedding_gen.llm = embedding_gen.llm.cuda(CUDA_DEVICE)
 
 dataset = datasets.load_dataset(DATASET, data_dir=None)[SPLIT]
@@ -42,8 +53,8 @@ def embed(row):
         labels = torch.zeros(len(all_text)).cpu()
         labels[0:len(row["chosen"])] = 1
 
-    print("moving to cpu")
-    embeddings = embeddings_gpu.cpu()
+        print("moving to cpu")
+        embeddings = embeddings_gpu.cpu()
     del embeddings_gpu
     print("collecting")
     gc.collect()
@@ -64,7 +75,7 @@ for num, row in enumerate(tqdm(dataset.iter(batch_size=BATCH_SIZE))):
         continue
 
     out_dict = embed(row)
+    del row
 
-
-    with open(out_file) as out_file_handle:
+    with open(out_file, "wb") as out_file_handle:
         pickle.dump(out_dict, out_file_handle)
