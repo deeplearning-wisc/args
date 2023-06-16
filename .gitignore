@@ -2,3 +2,5 @@
 out.log
 notes.txt
 return.sh
+setkey.py
+__pycache__

@@ -5,8 +5,10 @@ import numpy as np
 DATASET = "Anthropic/hh-rlhf"
 SPLIT = "train"
 HAS_SFT = False
+# POOLING_METHODS = ["pooling_mode_mean_tokens", "pooling_mode_max_tokens", "pooling_mode_mean_sqrt_len_tokens"]
 POOLING_METHODS = ["pooling_mode_mean_tokens"]
-LAYERS = [-1]
+# LAYERS = [-1]
+LAYERS = [28]
 
 pooling_method_str = str(list(map(lambda x: x[len("pooling_mode_"):], POOLING_METHODS))).replace('\'','').replace(' ','')
 layer_str = str(LAYERS).replace('\'','').replace(' ','')
@@ -30,6 +32,7 @@ print(f"{dataset['embeddings'].mean(axis=0)=}")
 print(f"{dataset['embeddings'].std(axis=0)=}")
 
 print(f"{np.mean(dataset['labels'])=}")
+print(f"{dataset['labels'][:32]=}")
 
 
 print(f"row")
