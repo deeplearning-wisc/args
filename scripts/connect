@@ -15,7 +15,7 @@ set host [format %s@%s $username $host]
 set password $env(WISC_CS_PASSWD)
 set timeout -1
 
-spawn ssh $host
+spawn ssh -v $host
 
 expect {
     "Are you sure you want to continue connecting (yes/no" {

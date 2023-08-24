@@ -1,6 +1,0 @@
-screen -S e0 -dm bash -c "python3 run_embed.py --batchsize 4 --numworkers 6 --workerid 0 --gpu 2; exec sh"
-screen -S e1 -dm bash -c "python3 run_embed.py --batchsize 4 --numworkers 6 --workerid 1 --gpu 3; exec sh"
-screen -S e2 -dm bash -c "python3 run_embed.py --batchsize 4 --numworkers 6 --workerid 2 --gpu 4; exec sh"
-screen -S e3 -dm bash -c "python3 run_embed.py --batchsize 4 --numworkers 6 --workerid 3 --gpu 5; exec sh"
-screen -S e4 -dm bash -c "python3 run_embed.py --batchsize 4 --numworkers 6 --workerid 4 --gpu 6; exec sh"
-screen -S e5 -dm bash -c "python3 run_embed.py --batchsize 4 --numworkers 6 --workerid 5 --gpu 7; exec sh"
