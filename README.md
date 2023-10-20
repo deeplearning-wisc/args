@@ -8,7 +8,7 @@ This repository contains the technical details and official implementation of th
 The following packages, and versions were used:
 
 ```bash=
-git clone ... .git
+git clone https://github.com/deeplearning-wisc/args.git
 
 conda create -n args python=3.9 -y
 conda activate args
