@@ -32,56 +32,27 @@ def rcache(past_key_values, beam_idx):
         )
     return reordered_past
 
-# def dynamic_batching_load(candidate_tokens, past_key_values, max_load=20000):
-    
 def even_chunk(data, chunk_size=10):
     assert data.shape[0] % chunk_size == 0, "chunk_size must evenly divide the topk"
     for i in range(0, data.shape[0], chunk_size):
         yield data[i:(i+chunk_size)]
 
-# From huggingface
-def prepare_inputs_for_generation(input_ids, past_key_values=None, attention_mask=None, inputs_embeds=None, **kwargs):
-        if past_key_values:
-            input_ids = input_ids[:, -1:]
-
-        position_ids = kwargs.get("position_ids", None)
-        if attention_mask is not None and position_ids is None:
-            # create position_ids on the fly for batch generation
-            position_ids = attention_mask.long().cumsum(-1) - 1
-            position_ids.masked_fill_(attention_mask == 0, 1)
-            if past_key_values:
-                position_ids = position_ids[:, -1].unsqueeze(-1)
-
-        # if `inputs_embeds` are passed, we only want to use them in the 1st generation step
-        if inputs_embeds is not None and past_key_values is None:
-            model_inputs = {"inputs_embeds": inputs_embeds}
-        else:
-            model_inputs = {"input_ids": input_ids}
-
-        model_inputs.update(
-            {
-                "position_ids": position_ids,
-                "past_key_values": past_key_values,
-                "use_cache": kwargs.get("use_cache"),
-                "attention_mask": attention_mask,
-            }
-        )
-        return model_inputs
-
 # reward based search
-class RBSearch:
+class ARGS:
     def __init__(self, llm_path="/nobackup-fast/bruh/LMFlow/output_models/llama-7b-sft", rm_path="/nobackup-fast/bruh/LMFlow/output_models/llama-7b-rm", llm_dev="cuda:0", rm_dev="cuda:1", torch_dtype=torch.float16):
         self.llm_dev = llm_dev
         self.rm_dev = rm_dev
         print("Loading LLM...")
-        self.LLM = LlamaForCausalLM.from_pretrained(llm_path, torch_dtype=torch_dtype).to(self.llm_dev)
+        # self.LLM = LlamaForCausalLM.from_pretrained(llm_path, torch_dtype=torch_dtype).to(self.llm_dev)
+        self.LLM = AutoModelForCausalLM.from_pretrained(llm_path, torch_dtype=torch_dtype).to(self.llm_dev)
         self.LLM.eval()
         
         print(f"Loading tokenizer...")
         self.tokenizer = AutoTokenizer.from_pretrained(llm_path)
         
         print("Loading RM...")
-        self.RM = LlamaForSequenceClassification.from_pretrained(rm_path, num_labels=1, torch_dtype=torch_dtype).to(self.rm_dev)
+        # self.RM = LlamaForSequenceClassification.from_pretrained(rm_path, num_labels=1, torch_dtype=torch_dtype).to(self.rm_dev)
+        self.RM = AutoModelForSequenceClassification.from_pretrained(rm_path, num_labels=1, torch_dtype=torch_dtype).to(self.rm_dev)
         self.RM.eval()
         
     def get_input_ids(self, prompt: str) -> torch.Tensor:
@@ -109,20 +80,11 @@ class RBSearch:
         new_rm_cached = None
         current_best_score = None
         current_best_tokens = None
-#         print(f"{flat_trme.shape=}")
         if debug: print(f"{prescreen_logits.flatten().shape=}")
         for chunk, chunk_logits in zip(even_chunk(flat_trme.to(self.rm_dev), chunk_size), even_chunk(prescreen_logits.flatten(), chunk_size)):
             pkv = None if not _use_cache else rm_cached
-            if weight == 0.:
-                _, top_k_ids = torch.topk(chunk_logits, dim=-1, k=1)
-                current_score = chunk_logits[top_k_ids[0]].item()
-                if (current_best_score is None) or (current_score > current_best_score):
-                    if debug: print(f"Updated (zero weight)!!")
-                    current_best_score = current_score
-                    current_best_tokens = chunk.to(self.llm_dev)[top_k_ids]
-                    continue
 
-            rm_out = self.RM(**prepare_inputs_for_generation(input_ids=chunk, attention_mask=create_attention_mask(chunk.shape[1], chunk.shape[0]).to(self.rm_dev), past_key_values=pkv, use_cache=True))
+            rm_out = self.RM(**self.LLM.prepare_inputs_for_generation(input_ids=chunk, attention_mask=create_attention_mask(chunk.shape[1], chunk.shape[0]).to(self.rm_dev), past_key_values=pkv, use_cache=True))
             current_rm_cached = rm_out.past_key_values
             rewards = rm_out.logits.flatten().to(self.llm_dev)
             del rm_out
@@ -139,7 +101,7 @@ class RBSearch:
                 
                 current_best_score = current_score
                 current_best_tokens = chunk.to(self.llm_dev)[top_k_ids]
-                new_rm_cached = rcache(current_rm_cached, top_k_ids.repeat(chunk_size,))
+                new_rm_cached = self.LLM._reorder_cache(current_rm_cached, top_k_ids.repeat(chunk_size,))
             
         if debug: print(f"{new_scores.shape=}")
         
@@ -161,10 +123,10 @@ class RBSearch:
         if debug: print(f"{flat_trme.shape=}")
 
         if rm_cached is None:
-            rm_out = self.RM(**prepare_inputs_for_generation(input_ids=flat_trme.to(self.rm_dev), attention_mask=create_attention_mask(flat_trme.shape[1], flat_trme.shape[0]).to(self.rm_dev), past_key_values=None, use_cache=True))
+            rm_out = self.RM(**self.LLM.prepare_inputs_for_generation(input_ids=flat_trme.to(self.rm_dev), attention_mask=create_attention_mask(flat_trme.shape[1], flat_trme.shape[0]).to(self.rm_dev), past_key_values=None, use_cache=True))
             rm_cached = rm_out.past_key_values
         else:
-            rm_out = self.RM(**prepare_inputs_for_generation(input_ids=flat_trme.to(self.rm_dev), attention_mask=create_attention_mask(flat_trme.shape[1], flat_trme.shape[0]).to(self.rm_dev), past_key_values=rm_cached, use_cache=True))
+            rm_out = self.RM(**self.LLM.prepare_inputs_for_generation(input_ids=flat_trme.to(self.rm_dev), attention_mask=create_attention_mask(flat_trme.shape[1], flat_trme.shape[0]).to(self.rm_dev), past_key_values=rm_cached, use_cache=True))
             rm_cached = rm_out.past_key_values
 
         if debug: print(f"{rm_out.logits.flatten()=}")
@@ -179,7 +141,6 @@ class RBSearch:
         if method == "greedy":
             _, top_k_ids = torch.topk(new_scores, dim=-1, k=1)
         elif method == "topk":
-#             new_scores = torch.stack(torch.split(new_scores, pre_screen_beam_width)) / temperature
             # assume B=1
             assert input_ids.shape[0] == 1
             new_scores = new_scores / temperature
@@ -189,23 +150,23 @@ class RBSearch:
             raise ValueError(f"Invalid method '{method}'")
             
         if debug: print(f"{top_k_ids.shape=}")
-        rm_cached = rcache(rm_cached, top_k_ids.repeat(pre_screen_beam_width,))
+        rm_cached = self.LLM._reorder_cache(rm_cached, top_k_ids.repeat(pre_screen_beam_width,))
         if debug: print(f"{rewards[top_k_ids]=}")
 
         return flat_trme[top_k_ids], rm_cached
     
-    def generate(self, prompt, weight=0., topk=1, max_new_token=128, method="greedy", temperature=0.7, chunk_size=5, debug=True):
+    def generate(self, prompt, weight=0., topk=1, max_new_token=128, method="greedy", temperature=0.7, chunk_size=5, debug=False):
         tokens = self.get_input_ids(prompt)
         initial_len = tokens.shape[-1]
         if chunk_size == "auto":
             chunk_size = auto_size(initial_len + max_new_token, topk)
             print(f"auto {chunk_size=}, {topk=}, {initial_len=}!")
         
-        if tokens.shape[-1] > self.LLM.config.max_sequence_length:
+        if tokens.shape[-1] > self.LLM.config.to_dict().get("max_sequence_length", 2048):
             print("The sequence of tokens is too long!!! Returning none!")
             return None
         
-        if tokens.shape[-1] > self.RM.config.max_sequence_length:
+        if tokens.shape[-1] > self.RM.config.to_dict().get("max_sequence_length", 2048):
             print("The sequence of tokens is too long!!! Returning none!")
             return None
           
@@ -219,10 +180,10 @@ class RBSearch:
             if debug: print(f"{type(rm_cached)=}")
             with torch.no_grad():
                 if cached is None:
-                    mout = self.LLM(**prepare_inputs_for_generation(input_ids=tokens, attention_mask=create_attention_mask(tokens.shape[1], tokens.shape[0]), past_key_values=None, use_cache=True))
+                    mout = self.LLM(**self.LLM.prepare_inputs_for_generation(input_ids=tokens, attention_mask=create_attention_mask(tokens.shape[1], tokens.shape[0]).to(self.llm_dev), past_key_values=None, use_cache=True))
                     cached = mout.past_key_values
                 else:
-                    mout = self.LLM(**prepare_inputs_for_generation(input_ids=tokens, attention_mask=create_attention_mask(tokens.shape[1], tokens.shape[0]), past_key_values=cached, use_cache=True))
+                    mout = self.LLM(**self.LLM.prepare_inputs_for_generation(input_ids=tokens, attention_mask=create_attention_mask(tokens.shape[1], tokens.shape[0]).to(self.llm_dev), past_key_values=cached, use_cache=True))
                     cached = mout.past_key_values
                 
                 if method == "greedy_large":
