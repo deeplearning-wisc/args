@@ -6,9 +6,9 @@ import re
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--out_file", type=str)
-parser.add_argument("--rm", type=str, default=r"/nobackup-fast/bruh/LMFlow/output_models/llama-7b-rm")
+parser.add_argument("--rm", type=str)
 parser.add_argument("--rm_gpu", type=str, default="cuda:0")
-parser.add_argument("--tokenizer", type=str, default=r"/nobackup-fast/bruh/LMFlow/output_models/llama-7b-sft")
+parser.add_argument("--tokenizer", type=str)
 parser.add_argument("--npout", type=str, default="")
 parser.add_argument("--experiment", type=str, default="hhrlhf")
 
