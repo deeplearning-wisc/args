@@ -64,10 +64,10 @@ We utilize various codebases for all model trainings. For a comprehensive unders
 | Base model | Checkpoints and Scripts                                                                                                                                                                                                                   |
 | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Llama 7B   | SFT: [Checkpoint](https://pages.cs.wisc.edu/~jirayu/llama-7b-sft-not-formatted.tar.gz) and [Script](https://pastebin.com/jJUFQwWu) <br/> RM: [Checkpoint](https://transfer.sh/upHy8tW4Gn/llama-7b-rm.tar.gz) and [Script](https://pastebin.com/2ifxRBAb)                                                     |
-| OPT-125m   | SFT: [Checkpoint](https://transfer.sh/rIF30mAjkf/opt-125m-sft.tar.gz) and [Script](https://pastebin.com/UiQFMQGm) <br/> RM: [Checkpoint](https://transfer.sh/unbw4MJ5n5/opt-125m-rm.tar.gz) and [Script](https://pastebin.com/Ru2qHDTa)   |
-| OPT-350m   | SFT: [Checkpoint](https://transfer.sh/Yy8iz6Yjwx/opt-350m-sft.tar.gz) and [Script](https://pastebin.com/wKJsVDcK) <br/> RM: [Checkpoint](https://transfer.sh/9CPet1FJqu/opt-350m-rm.tar.gz) and [Script](https://pastebin.com/UT7CKKbx)   |
-| OPT-1.3b   | SFT: [Checkpoint](https://transfer.sh/9svBpWTpmr/opt-1.3b-sft.tar.gz) and [Script](https://pastebin.com/24uJ6hak) <br/> PPO: [Checkpoint](https://transfer.sh/Bf46VWea3L/opt-1.3b-ppo.tar.gz) and [Script](https://pastebin.com/6iGDgyz5) |
-| OPT-2.7b   | SFT: [Checkpoint](https://transfer.sh/65aXgVgik7/opt-2.7b-sft.tar.gz) and [Script](https://pastebin.com/VU7zYBbZ)                                                                                                                         |
+| OPT-125m   | SFT: [Checkpoint](https://transfer.sh/rIF30mAjkf/opt-125m-sft.tar.gz) and [Script](https://pastebin.com/WT68UaBs) <br/> RM: [Checkpoint](https://transfer.sh/unbw4MJ5n5/opt-125m-rm.tar.gz) and [Script](https://pastebin.com/q3nKXi8U)   |
+| OPT-350m   | SFT: [Checkpoint](https://transfer.sh/Yy8iz6Yjwx/opt-350m-sft.tar.gz) and [Script](https://pastebin.com/wKJsVDcK) <br/> RM: [Checkpoint](https://transfer.sh/9CPet1FJqu/opt-350m-rm.tar.gz) and [Script](https://pastebin.com/KXQynu8Q)   |
+| OPT-1.3b   | SFT: [Checkpoint](https://transfer.sh/9svBpWTpmr/opt-1.3b-sft.tar.gz) and [Script](https://pastebin.com/axSqXU8b) <br/> PPO: [Checkpoint](https://transfer.sh/Bf46VWea3L/opt-1.3b-ppo.tar.gz) and [Script](https://pastebin.com/QiMFhVLi) |
+| OPT-2.7b   | SFT: [Checkpoint](https://transfer.sh/65aXgVgik7/opt-2.7b-sft.tar.gz) and [Script](https://pastebin.com/xwaL9WM3)                                                                                                                         |
 
 For example, if you want to train the `OPT-1.3b` PPO model, you can run the following snippet
 ```bash
@@ -82,21 +82,21 @@ pip install -r requirements.txt
 # SFT
 export SFT_PATH="..."
 cd training/step1_supervised_finetuning/
-wget https://pastebin.com/raw/24uJ6hak -O- | dos2unix > training_scripts/opt/single_node/run_1.3b.sh
+wget https://pastebin.com/raw/axSqXU8b -O- | dos2unix > training_scripts/opt/single_node/run_1.3b.sh
 bash training_scripts/opt/single_node/run_1.3b.sh $SFT_PATH
 cd ../..
 
 # RM
 export RM_PATH="..."
 cd training/step2_reward_model_finetuning/
-wget https://pastebin.com/raw/mX8bjvBW -O- | dos2unix > training_scripts/opt/single_node/run_350m.sh
+wget https://pastebin.com/raw/hitmPibN -O- | dos2unix > training_scripts/opt/single_node/run_350m.sh
 bash training_scripts/opt/single_node/run_350m.sh $RM_PATH $SFT_PATH
 cd ../..
 
 # PPO
 export PPO_PATH="..."
 cd training/step3_rlhf_finetuning/
-wget https://pastebin.com/raw/6iGDgyz5 -O- | dos2unix > training_scripts/opt/single_node/run_350m.sh
+wget https://pastebin.com/raw/SRL5Zh53 -O- | dos2unix > training_scripts/opt/single_node/run_350m.sh
 bash training_scripts/opt/single_node/run_1.3b.sh $SFT_PATH $RM_PATH 2 2 $PPO_PATH
 ```
 
