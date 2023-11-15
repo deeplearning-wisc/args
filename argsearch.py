@@ -39,11 +39,10 @@ def even_chunk(data, chunk_size=10):
 
 # reward based search
 class ARGS:
-    def __init__(self, llm_path="/nobackup-fast/bruh/LMFlow/output_models/llama-7b-sft", rm_path="/nobackup-fast/bruh/LMFlow/output_models/llama-7b-rm", llm_dev="cuda:0", rm_dev="cuda:1", torch_dtype=torch.float16):
+    def __init__(self, llm_path, rm_path, llm_dev="cuda:0", rm_dev="cuda:1", torch_dtype=torch.float16):
         self.llm_dev = llm_dev
         self.rm_dev = rm_dev
         print("Loading LLM...")
-        # self.LLM = LlamaForCausalLM.from_pretrained(llm_path, torch_dtype=torch_dtype).to(self.llm_dev)
         self.LLM = AutoModelForCausalLM.from_pretrained(llm_path, torch_dtype=torch_dtype).to(self.llm_dev)
         self.LLM.eval()
         
@@ -51,7 +50,6 @@ class ARGS:
         self.tokenizer = AutoTokenizer.from_pretrained(llm_path)
         
         print("Loading RM...")
-        # self.RM = LlamaForSequenceClassification.from_pretrained(rm_path, num_labels=1, torch_dtype=torch_dtype).to(self.rm_dev)
         self.RM = AutoModelForSequenceClassification.from_pretrained(rm_path, num_labels=1, torch_dtype=torch_dtype).to(self.rm_dev)
         self.RM.eval()
         
