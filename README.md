@@ -57,11 +57,11 @@ ARGS.generate(prompt: str, weight: float, topk: int, max_new_token: int, method:
 
 ## Models
 
-### Checkpoints and Training Details
+### Training Details
 
-We utilize various codebases for all model trainings. For a comprehensive understanding, we recommend reviewing their detailed instructions. For the Llama 7B model, we employe [LMFlow](https://github.com/OptimalScale/LMFlow/tree/main) for both supervised finetuning and reward modeling on the complete HH-RLHF training set. To replicate our setup, adjust `examples/reward_modeling.py` to load the model in `float16` and ensure you exclude the LoRA optimization. For the OPT models, all training is facilitated through [DeepSpeed Chat](https://github.com/microsoft/DeepSpeedExamples/tree/master/applications/DeepSpeed-Chat). We are releasing the checkpoints used in the paper and the associated scripts for reproducible research.
+We utilize various codebases for all model trainings. For a comprehensive understanding, we recommend reviewing their detailed instructions. For the Llama 7B model, we employe [LMFlow](https://github.com/OptimalScale/LMFlow/tree/main) for both supervised finetuning and reward modeling on the complete HH-RLHF training set. To replicate our setup, adjust `examples/reward_modeling.py` to load the model in `float16` and ensure you exclude the LoRA optimization. For the OPT models, all training is facilitated through [DeepSpeed Chat](https://github.com/microsoft/DeepSpeedExamples/tree/master/applications/DeepSpeed-Chat). We are releasing the associated scripts used to train the models for reproducible research.
 
-| Base model | Checkpoints and Scripts                                                                                                                                                                                                                   |
+| Base model | Training Scripts                                                                                                                                                                                                                   |
 | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Llama 7B   | SFT: [Script](https://pastebin.com/jJUFQwWu) <br/> RM: [Script](https://pastebin.com/2ifxRBAb)                                                     |
 | OPT-125m   | SFT: [Script](https://pastebin.com/UiQFMQGm) <br/> RM: [Script](https://pastebin.com/Ru2qHDTa)   |
