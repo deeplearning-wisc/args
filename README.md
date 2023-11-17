@@ -64,8 +64,8 @@ We utilize various codebases for all model trainings. For a comprehensive unders
 | Base model | Training Scripts                                                                                                                                                                                                                   |
 | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Llama 7B   | SFT: [Script](https://pastebin.com/jJUFQwWu) <br/> RM: [Script](https://pastebin.com/2ifxRBAb)                                                     |
-| OPT-125m   | SFT: [Script](https://pastebin.com/0jWs8eB8) <br/> RM: [Script](https://pastebin.com/Kx5qNtKL)   |
-| OPT-350m   | SFT: [Script](https://pastebin.com/y3GVgPaJ) <br/> RM: [Script](https://pastebin.com/fjxfnF9p)   |
+| OPT-125m   | SFT: [Script](https://pastebin.com/0jWs8eB8) <br/> RM: [Script](https://pastebin.com/SqeKdqVD)   |
+| OPT-350m   | SFT: [Script](https://pastebin.com/y3GVgPaJ) <br/> RM: [Script](https://pastebin.com/a3fhRS4m)   |
 | OPT-1.3b   | SFT: [Script](https://pastebin.com/2tk11NaT) <br/> PPO: [Script](https://pastebin.com/LH7d066c) |
 | OPT-2.7b   | SFT: [Script](https://pastebin.com/VWnSvRqW)                                                     |
 
