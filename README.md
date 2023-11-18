@@ -63,9 +63,9 @@ We utilize various codebases for all model trainings. For a comprehensive unders
 
 | Base model | Checkpoints and Scripts                                                                                                                                                                                                                   |
 | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Llama 7B   | SFT: [Script](https://pastebin.com/jJUFQwWu) <br/> RM: [Script](https://pastebin.com/2ifxRBAb)                                                     |
-| OPT-125m   | SFT: [Script](https://pastebin.com/WT68UaBs) <br/> RM: [Script](https://pastebin.com/hitmPibN)   |
-| OPT-350m   | SFT: [Script](https://pastebin.com/H02x2EVS) <br/> RM: [Script](https://pastebin.com/hitmPibN)   |
+| Llama 7B   | SFT: [Script](https://pastebin.com/jJUFQwWu) and [Checkpoint](https://huggingface.co/argsearch/llama-7b-sft-float32) <br/> RM: [Script](https://pastebin.com/2ifxRBAb) and [Checkpoint](https://huggingface.co/argsearch/llama-7b-rm-float32)                                                     |
+| OPT-125m   | SFT: [Script](https://pastebin.com/WT68UaBs) <br/> RM: [Script](https://pastebin.com/hitmPibN) |
+| OPT-350m   | SFT: [Script](https://pastebin.com/H02x2EVS) <br/> RM: [Script](https://pastebin.com/hitmPibN) |
 | OPT-1.3b   | SFT: [Script](https://pastebin.com/axSqXU8b) <br/> PPO: [Script](https://pastebin.com/QiMFhVLi) |
 | OPT-2.7b   | SFT: [Script](https://pastebin.com/xwaL9WM3)                                                                                                                         |
 
