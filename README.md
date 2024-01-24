@@ -2,6 +2,8 @@
 
 This repository contains the technical details and official implementation of the paper [**Alignment as Reward-Guided Search**](https://openreview.net/forum?id=shgx0eqdw6). In this work, we introduce ARGS, Alignment as Reward-Guided Search, a novel framework that integrates alignment into the decoding process. By adjusting the model’s probabilistic predictions using a reward signal, ARGS generates texts with semantic diversity while being aligned with human preferences.
 
+[ARGS live demo!](https://huggingface.co/spaces/argsearch/Inference)
+
 ![](https://hackmd.io/_uploads/HytELkzW6.png)
 
 ## Setup
