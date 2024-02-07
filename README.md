@@ -21,7 +21,7 @@ pip -r requirements.txt
 
 ## Text generation with ARGS
 
-To begin generation, simply import the `RBSearch` class specifying the path of the language model and reward model path. Note that the reward model and language model must be trained with the same tokenizer. The tokenizer is automatically loaded from the language model path. When running the `RBSearch.generate` method, a decoding method can be specified with the `method` keyword argument, the top-k tokens for reward evaluation can be specified with the `topk` keyword argument, and a reward model weight can be specified with the `weight` keyword argument.
+To begin generation, simply import the `ARGS` class specifying the path of the language model and reward model path. Note that the reward model and language model must be trained with the same tokenizer. The tokenizer is automatically loaded from the language model path. When running the `ARGS.generate` method, a decoding method can be specified with the `method` keyword argument, the top-k tokens for reward evaluation can be specified with the `topk` keyword argument, and a reward model weight can be specified with the `weight` keyword argument.
 
 ```python
 from argsearch import ARGS
