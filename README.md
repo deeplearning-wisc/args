@@ -259,15 +259,11 @@ The default greedy decoding strategy is relativly slow, but should work everywhe
 
 If you find this repository useful in your research, please consider citing:
 
-*Temporary*
 ```
-@inproceedings{
-anonymous2023alignment,
-title={Alignment as Reward-Guided Search},
-author={Anonymous},
-booktitle={Submitted to The Twelfth International Conference on Learning Representations},
-year={2023},
-url={https://openreview.net/forum?id=shgx0eqdw6},
-note={under review}
+@inproceedings{khanov2024args,
+    title={ARGS: Alignment as Reward-Guided Search},
+    author={Maxim Khanov and Jirayu Burapacheep and Yixuan Li},
+    booktitle={Proceedings of the International Conference on Learning Representations},
+    year={2024}
 }
 ```
